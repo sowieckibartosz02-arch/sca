@@ -1,0 +1,27 @@
+[
+  {
+    "engine": "01-realistic-pbr",
+    "high_pipeline": "rendered",
+    "audio": "running after gesture",
+    "offline": true,
+    "external_requests": [],
+    "errors": [],
+    "draw_calls": 265,
+    "triangles": 283477
+  },
+  {
+    "engine": "02-painterly",
+    "high_pipeline": "rendered",
+    "audio": "running after gesture",
+    "offline": true,
+    "external_requests": [],
+    "errors": [],
+    "draw_calls": 257,
+    "triangles": 283468
+  },
+  {
+    "native_dpr": 1.5,
+    "physical_canvas_width": 720,
+    "css_canvas_width": 480
+  }
+]

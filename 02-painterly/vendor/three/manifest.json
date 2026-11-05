@@ -1,0 +1,25 @@
+{
+  "package": "three",
+  "version": "0.170.0",
+  "source": "https://registry.npmjs.org/three/0.170.0",
+  "tarball": "https://registry.npmjs.org/three/-/three-0.170.0.tgz",
+  "integrity": "sha512-FQK+LEpYc0fBD+J8g6oSEyyNzjp+Q7Ks1C568WWaoMRLW+TkNNWmenWeGgJjV105Gd+p/2ql1ZcjYvNiPZBhuQ==",
+  "cdn_equivalent": "https://cdn.jsdelivr.net/npm/three@0.170.0/",
+  "files": {
+    "LICENSE": "4c40a1ef62450b857c3b2aaf294936304cd552d965fbcd9d32d4c5bcf4ba4454",
+    "build/three.module.js": "ce1fa418de16a19495a9f72495580e3015d7745c296d3ce0485897f902ddedfb",
+    "examples/jsm/geometries/RoundedBoxGeometry.js": "d20aeaf7077c459a8d952d215738d7b44fba028440bb862d84b622a34f0c80bb",
+    "examples/jsm/loaders/GLTFLoader.js": "45139faddd5aaf48ed2d62203d976e5cbd703db1a592de40527f9f6cf58abd44",
+    "examples/jsm/postprocessing/EffectComposer.js": "d234e578618fa816955ebdc059c049c577e203e650e33cf22bde3f232c29e669",
+    "examples/jsm/postprocessing/MaskPass.js": "328cf7db0da5d9be83ffe39d54b01d5ac1fddf108cc98182ddbb056f5c8b537f",
+    "examples/jsm/postprocessing/OutlinePass.js": "e8c321139fcbdd86872f50d40f0210303e060bd54e5e9c50ecf305b8af4a43f0",
+    "examples/jsm/postprocessing/OutputPass.js": "32f879d2179087676631c799857a885586b3cdd13b9731bd3b13f06428bd58b7",
+    "examples/jsm/postprocessing/Pass.js": "b3c6128340eaa37e40a6a2f1b738e894c855239417d50959759b34a2b5e89f92",
+    "examples/jsm/postprocessing/RenderPass.js": "6c9b8a539ea16e898f65e4760f14937ef9ea94043bd9842c141e0301f41903e8",
+    "examples/jsm/postprocessing/ShaderPass.js": "3b28a1ee27e0eb96c0eab137a1f442ccf127a926904eced2d51e125ec44af781",
+    "examples/jsm/shaders/CopyShader.js": "4e3346db194db56a596cd074e9bdb39fb5eb52040c333e0d29dc4eb1324d3b1d",
+    "examples/jsm/shaders/FXAAShader.js": "b2c45ad02565a8e6b6fe8e11de18a4f25294fb845777d20651592864614ae310",
+    "examples/jsm/shaders/OutputShader.js": "4944cecd49c0d4d1520a4d927bde8a590fd43f041ee913252b9451855a01d0f0",
+    "examples/jsm/utils/BufferGeometryUtils.js": "c25b7930e570e9ec56173cd3b866ec8d2e10016630db3937efb439daf1cedbf6"
+  }
+}

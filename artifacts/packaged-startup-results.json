@@ -1,0 +1,40 @@
+[
+  {
+    "engine": "01-realistic-pbr",
+    "http_without_external_requests": "passed",
+    "external_requests": [],
+    "pageerrors": [],
+    "failure_cases": [
+      {
+        "mode": "missing-module",
+        "seconds_to_diagnostic": 0.158,
+        "result": "passed"
+      },
+      {
+        "mode": "thrown-init",
+        "seconds_to_diagnostic": 0.125,
+        "result": "passed"
+      }
+    ],
+    "file_protocol_diagnostic": "passed with location adapter; actual file navigation blocked by managed browser policy"
+  },
+  {
+    "engine": "02-painterly",
+    "http_without_external_requests": "passed",
+    "external_requests": [],
+    "pageerrors": [],
+    "failure_cases": [
+      {
+        "mode": "missing-module",
+        "seconds_to_diagnostic": 0.077,
+        "result": "passed"
+      },
+      {
+        "mode": "thrown-init",
+        "seconds_to_diagnostic": 0.091,
+        "result": "passed"
+      }
+    ],
+    "file_protocol_diagnostic": "passed with location adapter; actual file navigation blocked by managed browser policy"
+  }
+]

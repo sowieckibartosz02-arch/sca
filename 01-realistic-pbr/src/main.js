@@ -8,7 +8,7 @@ import { Meta } from './meta.js';
 const PAINTERLY=false;
 const $=id=>document.getElementById(id), canvas=$('game');
 const saveId=PAINTERLY?'afterimage-ink-v1':'afterimage-pbr-v1';
-const notify=text=>{ $('notice').textContent=text; $('notice').style.opacity='1'; noticeTime=5; };
+const notify=text=>{ $('notice').textContent=text; $('notice').style.opacity='1'; noticeTime=4; };
 let noticeTime=0, state='menu', started=false, room='', testReturn=null, accumulator=0, last=performance.now(), elapsed=0, flickerUntil=0, fpsTime=0, fpsFrames=0, qualityTime=0, qualityFrames=0, fps=60, debug=false, hudTime=0;
 let view,world;
 try { view=new View(canvas);world=new World(view.scene,PAINTERLY);if(PAINTERLY)view.selectInk(world.root); }
@@ -20,9 +20,11 @@ const progress={time:0,fear:.15,battery:100,key:false,radio:false,memory:false,d
 const ghost={active:false,until:0,cooldown:20};
 const objective=()=>!progress.radio?'Znajdź i włącz radio w salonie.':!progress.key?'Znajdź mosiężny klucz w gabinecie.':!progress.memory?'Otwórz sypialnię i zostań, aż powróci wspomnienie.':!progress.signal?'Poczekaj na ostatni sygnał radia. Zbadaj mieszkanie.':'Wróć do wejścia i użyj przełącznika przy drzwiach.';
 $('memory').textContent=meta.visits>1?`Wizyta ${meta.visits}. Od poprzedniej minęło ${meta.absence} min. Mieszkanie pamięta.`:'Pierwsza wizyta. Radio zostawiono włączone, choć nikogo tu nie ma.';
-$('boot').textContent='Gotowe. Krótka historia: około 3–5 minut. Przytrzymanie światła chroni przed lękiem.';
+$('boot').textContent='Gotowe. Krótka historia: około 3–5 minut. Włączona latarka chroni przed lękiem.';
 $('begin').disabled=false;
+view.onShadows=level=>world.quality?.(level);
 view.quality('high');
+view.camera.position.copy(player);view.camera.rotation.set(-.025,.02,0);
 function flicker(seconds=2){flickerUntil=elapsed+seconds;sound.pulse(90,.3,.12,true);}
 function spawn(){ghost.active=true;ghost.until=elapsed+8;world.ghost.position.set(player.x+Math.cos(yaw)*1.4,0,player.z+Math.sin(yaw)*1.4-2);world.ghost.visible=true;}
 story.when('hall').then(()=>notify('Na ścianie jest cień. Brakuje przedmiotu, który go rzuca.')).then(()=>flicker(2),1.5);
@@ -42,17 +44,31 @@ function restore(data){
 function save(){if(state==='test')return notify('Wróć z laboratorium przed zapisem.');try{localStorage.setItem(saveId,JSON.stringify(snapshot()));notify('Zapisano stan mieszkania.');}catch{notify('Przeglądarka zablokowała zapis.');}}
 function load(){if(state==='test')return notify('Wróć z laboratorium przed odczytem.');try{const raw=localStorage.getItem(saveId);if(!raw)return notify('Brak zapisu.');restore(JSON.parse(raw));notify('Przywrócono wspomnienie.');}catch(e){notify('Odczyt nieudany: '+e.message);}}
 function end(win){if(state==='end')return;state='end';document.exitPointerLock();sound.pause();$('endingTitle').textContent=win?'You can leave now.':'The room remembers you.';$('endingText').textContent=win?'Zabrałeś wspomnienie. Mieszkanie nie potrzebuje już świadka.':'Lęk wypełnił pokój. Włączaj latarkę i odpoczywaj przy radiu, aby odzyskać spokój.';$('ending').hidden=false;}
-async function run(){
- try{await sound.start();sound.master.gain.value=Number($('volume').value);started=true;input.keys.clear();input.pressed.clear();state='play';$('start').hidden=true;$('pause').hidden=true;await canvas.requestPointerLock();}
- catch(e){notify('Kliknij obraz, aby przejąć mysz. '+e.message);if(started)pause();}
+function captureMouse(){
+ input.fallback=false;
+ try { Promise.resolve(canvas.requestPointerLock()).catch(freeMouse); }
+ catch { freeMouse(); }
 }
-function pause(){if(!started||state==='end')return;if(state==='test')leaveTest();state='pause';$('pause').hidden=false;sound.pause();input.keys.clear();input.pressed.clear();}
+function freeMouse(){
+ if(state!=='play'&&state!=='test')return;
+ input.fallback=true;
+ notify('Mysz nie została przejęta. Przytrzymaj lewy przycisk i przeciągaj, aby patrzeć. Esc otwiera pauzę.');
+}
+async function run(){
+ started=true;input.keys.clear();input.pressed.clear();state='play';$('start').hidden=true;$('pause').hidden=true;
+ // Capture is requested during the actual click, before awaiting browser audio permission.
+ captureMouse();
+ try { await sound.start();sound.master.gain.value=Number($('volume').value); }
+ catch { notify('Dźwięk jest zablokowany przez przeglądarkę. Gra działa; odblokuj audio w ustawieniach witryny.'); }
+}
+function pause(){if(!started||state==='end')return;if(state==='test')leaveTest();input.fallback=false;state='pause';$('pause').hidden=false;sound.pause();input.keys.clear();input.pressed.clear();}
 function enterTest(){testReturn=snapshot();state='test';player.set(0,1.65,1);yaw=0;pitch=0;$('test').hidden=false;$('sanity').value=Math.round(progress.fear*100);document.exitPointerLock();notify('Sandbox aktywny. Ustaw parametry i kliknij scenę, aby chodzić.');}
 function leaveTest(){if(!testReturn)return;restore(testReturn);testReturn=null;$('test').hidden=true;state='play';}
 $('begin').onclick=run;$('resume').onclick=run;$('save').onclick=save;$('load').onclick=load;
 $('restart').onclick=$('again').onclick=()=>location.reload();
-canvas.onclick=()=>{if(started&&(state==='play'||state==='test'))canvas.requestPointerLock().catch(()=>notify('Nie udało się przejąć myszy.'));};
-document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&state==='play')pause();});
+canvas.onclick=()=>{if(started&&(state==='play'||state==='test')&&!input.fallback)captureMouse();};
+document.addEventListener('pointerlockerror',freeMouse);
+document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&state==='play'&&!input.fallback)pause();});
 addEventListener('blur',()=>{if(state==='play')pause();else if(state==='test')sound.pause();});
 $('quality').onchange=()=>{view.quality($('quality').value);$('scale').value=view.scale;$('shadows').value=view.shadowQuality;$('scaleValue').textContent=Math.round(view.scale*100)+'%';};
 $('scale').oninput=()=>{view.scale=Number($('scale').value);$('scaleValue').textContent=Math.round(view.scale*100)+'%';view.resize();};
@@ -86,7 +102,7 @@ function update(dt){
  if(input.take('Backquote')){$('console').hidden=!$('console').hidden;if(!$('console').hidden){if(document.pointerLockElement)document.exitPointerLock();$('command').focus();}}
  if(input.take('KeyT')&&started&&state!=='end'){if(state==='test'){leaveTest();run();}else if(state==='play'||state==='pause'){ $('pause').hidden=true;enterTest(); }}
  if(state!=='play'&&state!=='test'){input.dx=input.dy=0;return;}
- const controlled=document.pointerLockElement===canvas;
+ const controlled=document.pointerLockElement===canvas||input.fallback;
  if(controlled){yaw-=input.dx*.002+input.turn*dt*2;pitch=THREE.MathUtils.clamp(pitch-input.dy*.002-input.look*dt*1.7,-1.35,1.35);}
  input.dx=input.dy=0;
  const f=controlled?input.forward:0,s=controlled?input.strafe:0;
@@ -112,7 +128,8 @@ function update(dt){
  if(input.take('KeyE'))interact();
  if(ghost.active){ghostDelta.copy(world.ghost.position);ghostDelta.y=1.6;ghostDelta.sub(player).normalize();const dot=direction.dot(ghostDelta);if(dot>.94||elapsed>ghost.until){ghost.active=false;world.ghost.visible=false;}else world.ghost.visible=dot>-.15;}
  else if(progress.fear>.65&&elapsed>ghost.cooldown){ghost.cooldown=elapsed+28;spawn();}
- for(const l of world.lights)l.intensity=view.testLights?l.userData.base*(elapsed<flickerUntil?.15+.85*Math.abs(Math.sin(elapsed*32)):1):0;
+ for(const l of world.lights)l.intensity=view.testLights?l.userData.base*(elapsed<flickerUntil&&l.userData.flickers!==false?.15+.85*Math.abs(Math.sin(elapsed*32)):1):0;
+ world.update?.(elapsed,dt,view.fogOn&&view.post);
  sound.update(dt,player,direction,progress.fear,moving,room==='bath'?'tile':'wood',elapsed);
 }
 function frame(now){
@@ -131,9 +148,10 @@ function frame(now){
  qualityTime+=wallDt;qualityFrames++;
  if(qualityTime>=5){const measured=qualityFrames/qualityTime;if($('adaptive').checked){const old=view.scale;if(measured<53)view.scale=Math.max(.5,view.scale-.1);else if(measured>59)view.scale=Math.min(Number($('scale').value),view.scale+.05);if(old!==view.scale)view.resize();}qualityTime=qualityFrames=0;}
  }
- requestAnimationFrame(frame);
+ requestAnimationFrame(safeFrame);
 }
+function safeFrame(now){try{frame(now);}catch(error){console.error(error);pause();$('pause').hidden=true;$('boot').textContent='Błąd renderowania: '+error.message;$('boot').setAttribute('role','alert');$('start').hidden=false;$('begin').disabled=true;$('bootRetry').hidden=false;}}
 addEventListener('pagehide',()=>{input.dispose();meta.dispose();sound.dispose();world.dispose();view.dispose();},{once:true});
 // Public authoring surface also allows the test harness to exercise real gameplay transitions.
 window.lab={view,world,story,progress,player,teleport(x,z,angle=0,tilt=0){player.set(x,1.65,z);yaw=angle;pitch=tilt;},get state(){return state;},save,load,spawn,flicker,meta,interact,enterTest,leaveTest};
-requestAnimationFrame(frame);
+requestAnimationFrame(safeFrame);

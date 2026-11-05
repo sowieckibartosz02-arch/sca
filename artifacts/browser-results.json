@@ -1,0 +1,42 @@
+[
+  {
+    "engine": "01-realistic-pbr",
+    "result": "passed",
+    "checks": [
+      "boot/native-DPR",
+      "gesture/pointer-lock",
+      "radio/key/door",
+      "bedroom trigger",
+      "save/load",
+      "test-room toggles/isolation",
+      "hallucination gaze",
+      "glTF fallback and load",
+      "180-second gate/win",
+      "pause/resume",
+      "keyboard movement",
+      "debug",
+      "fear/loss"
+    ],
+    "pageerrors": []
+  },
+  {
+    "engine": "02-painterly",
+    "result": "passed",
+    "checks": [
+      "boot/native-DPR",
+      "gesture/pointer-lock",
+      "radio/key/door",
+      "bedroom trigger",
+      "save/load",
+      "test-room toggles/isolation",
+      "hallucination gaze",
+      "glTF fallback and load",
+      "180-second gate/win",
+      "pause/resume",
+      "keyboard movement",
+      "debug",
+      "fear/loss"
+    ],
+    "pageerrors": []
+  }
+]

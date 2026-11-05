@@ -2,7 +2,7 @@
 
 ## Start
 
-Python 3, desktop Chrome/Firefox, WebGL2, Internet do cdn.jsdelivr.net. Uruchom `./start.sh` lub `start.bat` w tym katalogu i otwórz lokalny serwer na porcie 8000. Nie potrzeba npm ani buildu. Importmap przypina Three.js i oficjalne addons do 0.170.0. Katalog jest samodzielny i nie importuje niczego z sąsiednich silników.
+Python 3, desktop Chrome/Firefox/Edge z WebGL2 i akceleracją sprzętową. Internet nie jest wymagany. Uruchom `./start.sh` lub `start.bat` w tym katalogu i otwórz lokalny serwer na porcie 8000. Nie potrzeba npm ani buildu. Importmap wskazuje dołączone pliki Three.js 0.170.0 oraz oficjalne addons w `vendor/three`. Licencja i manifest hashy są w tym samym katalogu. Katalog jest samodzielny i nie importuje niczego z sąsiednich silników.
 
 ## Architektura
 
@@ -20,6 +20,9 @@ HTML UI → main.js [menu / play / pause / test / end]
 index.html       click-to-start, settings, test room, console
 style.css        native-resolution responsive overlay
 start.sh/.bat    Python static server
+src/bootstrap.js start offline, diagnoza file:// i błędów importów
+src/decor.js     szczegółowe proceduralne wyposażenie i statyczne paczki geometrii
+vendor/three/   przypięta biblioteka i MIT LICENSE
 src/main.js      fixed 60 Hz simulation, state machine, progression, save/load
 src/render.js    rendering graph, lights, shadows, fog, adaptive resolution hooks
 src/world.js     modular room kit, colliders, procedural props, GLTFLoader fallback
@@ -62,6 +65,10 @@ F3 pokazuje FPS, sumę draw calls i trójkątów z przebiegów, liczbę obiektó
 
 Render przy High / skala 100% używa pełnego devicePixelRatio. MSAA na rendererze plus końcowe FXAA; postprocessowane targety polegają na FXAA. Brak PSX, ditheringu i snappingu. Regulowana skala 50–100% jest świadomą opcją wydajnościową. Adaptacja ocenia klatki co 5 s i redukuje skalę przy <53 FPS, zwiększa przy >59 FPS do ustawionego maksimum. Minimum 50% nie gwarantuje 60 FPS. Tryb Low zachowuje toon z lżejszą kreską; cienie to PCF soft 1024/2048 lub Off. Post-FX wyłącza artystyczne przebiegi; końcowe zarządzanie kolorem i FXAA pozostają.
 
-Prosty cone mesh z shaderem oraz FogExp2 przybliżają światło w mgle. Nie ma pełnej symulacji objętościowej, GI ani odbić ray tracing. Obrys postaci jest stylizacją, nie pełnym systemem krawędzi kreskowych; papierowy szum ma celowo małą amplitudę. Brak fizyki, navmesha, pionowego ruchu, edytora. Proceduralne kroki mają dwie barwy podłoża; szept to filtrowany szum, nie mowa. Halucynacja jest widoczna na obrzeżu pola widzenia i znika po spojrzeniu.
+FogExp2 oraz przestrzenne efekty sceny przybliżają atmosferę; usunięto stary stożek przypięty do kamery, który tworzył trójkątną zasłonę. Nie ma pełnej symulacji objętościowej, GI ani odbić ray tracing. Obrys postaci jest stylizacją, nie pełnym systemem krawędzi kreskowych; papierowy szum ma celowo małą amplitudę. Brak fizyki, navmesha, pionowego ruchu, edytora. Proceduralne kroki mają odmienne filtry i obwiednie dla drewna oraz płytek; szept to filtrowany szum, nie mowa. Halucynacja jest widoczna na obrzeżu pola widzenia i znika po spojrzeniu.
 
 Pętla ma 60 Hz stały krok, maksymalnie sześć kroków nadrabiania. Brak interpolacji oznacza możliwą nierówność ruchu przy innych częstotliwościach monitora. Obiekty wektorowe są współdzielone w gorących obliczeniach. Audio jednorazowe alokuje węzły tylko przy zdarzeniach. `pagehide` zwalnia wejścia, meta-timery, audio, mapy cieni, passy, geometrie, materiały i tekstury. Powrót z bfcache wymaga odświeżenia, ponieważ kontekst został zwolniony.
+
+## Start v2 i diagnostyka
+
+Rozpakuj cały katalog wraz z vendor. Otwieranie index.html dwuklikiem jest rozpoznawane i pokazuje instrukcję uruchomienia serwera. Błędy importów mają widoczny opis i przycisk ponowienia. Jeżeli przeglądarka odmawia pointer lock, nadal działa chodzenie oraz rozglądanie przez przeciąganie myszą. Windows: skrypt szuka py -3, potem python, i nie zamyka komunikatu błędu.

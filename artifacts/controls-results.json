@@ -1,0 +1,16 @@
+[
+  {
+    "engine": "01-realistic-pbr",
+    "audio_denied": "playable",
+    "pointer_lock_denied": "WASD and drag-look passed",
+    "pause_resume": "passed",
+    "pageerrors": []
+  },
+  {
+    "engine": "02-painterly",
+    "audio_denied": "playable",
+    "pointer_lock_denied": "WASD and drag-look passed",
+    "pause_resume": "passed",
+    "pageerrors": []
+  }
+]

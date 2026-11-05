@@ -1,7 +1,7 @@
 const dead = v => Math.abs(v) < .16 ? 0 : v;
 export class Input {
   constructor(canvas) {
-    this.keys = new Set(); this.pressed = new Set(); this.dx = 0; this.dy = 0;
+    this.keys = new Set(); this.pressed = new Set(); this.dx = 0; this.dy = 0; this.fallback = false; this.dragging = false;
     this.forward = 0; this.strafe = 0; this.turn = 0; this.look = 0; this.padUse = false;
     this.abort = new AbortController(); const opts = { signal: this.abort.signal };
     addEventListener('keydown', e => {
@@ -12,7 +12,9 @@ export class Input {
     }, opts);
     addEventListener('keyup', e => this.keys.delete(e.code), opts);
     addEventListener('blur', () => { this.keys.clear(); this.pressed.clear(); this.dx = this.dy = 0; }, opts);
-    addEventListener('mousemove', e => { if (document.pointerLockElement === canvas) { this.dx += e.movementX; this.dy += e.movementY; } }, opts);
+    canvas.addEventListener('mousedown', e => { if(e.button===0)this.dragging=true; }, opts);
+    addEventListener('mouseup', () => { this.dragging=false; }, opts);
+    addEventListener('mousemove', e => { if (document.pointerLockElement === canvas || (this.fallback && this.dragging)) { this.dx += e.movementX; this.dy += e.movementY; } }, opts);
   }
   take(key) { const has = this.pressed.has(key); this.pressed.delete(key); return has; }
   sample() {

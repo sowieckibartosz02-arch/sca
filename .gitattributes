@@ -1,0 +1,4 @@
+*.bat text eol=crlf
+*.sh text eol=lf
+01-realistic-pbr/vendor/** -text -whitespace
+02-painterly/vendor/** -text -whitespace

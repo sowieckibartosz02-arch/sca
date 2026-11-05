@@ -1,7 +1,8 @@
 # ENGINE API — kontrakt do przyszłych promptów
 
 ## Runtime
-- Samodzielny katalog; HTML/CSS/ES modules, Three.js 0.170.0 importmap CDN.
+- bootstrap.js diagnozuje błędy importów i file:// przed startem.
+- Samodzielny katalog; HTML/CSS/ES modules, Three.js 0.170.0, importmap lokalny vendor/three, offline.
 - Brak npm, buildu i zewnętrznych assetów demo. Python http.server, nie file://.
 - `src/main.js` jest composition root. Stany: menu, play, pause, test, end.
 - Symulacja 1/60 s; maks. 6 kroków catch-up; renderer na requestAnimationFrame.
@@ -21,7 +22,7 @@ view.dispose();
 - High skala 1 zachowuje devicePixelRatio; FXAA, ACES, cienie PCF soft.
 - PBR: SSAO + bloom. Painterly: toon ramp + selected-object OutlinePass.
 - Painterly: `view.selectInk(world.root)` po dodaniu nowych brył.
-- Cone shafts to aproksymacja, nie fizyczne volumetrics.
+- Mgła i efekty sceny to aproksymacja, nie pełne fizyczne volumetrics.
 
 ## World (src/world.js)
 ```js
@@ -34,6 +35,7 @@ world.blocked(x,z); // flat collision including player radius
 world.objects.set('switch2', mesh);
 world.lights; world.key; world.door; world.radio; world.ghost;
 await world.loadProp('./models/radio.glb', 'radio'); // false on fallback
+world.update(time, dt, atmosphericEffectsEnabled); world.quality(shadowLevel);
 world.dispose();
 ```
 - `kind`: wall, wood, tile, metal; map cache, generated normal/roughness/albedo.
@@ -82,6 +84,8 @@ meta.illusion('loading'); meta.illusion('crash'); meta.dispose();
 - Publiczny lab: view/world/story/progress/player/state/save/load/spawn/flicker/meta.
 
 ## Ograniczenia i kontrakt zmian
+- Zachowuj istniejące wyposażenie; dopracowuj modele zamiast usuwać scenę.
+- Twarde powierzchnie: fazy 1–8 mm; obicia 18–25 mm. PBR bez cukierkowych proporcji.
 - Flat collision, bez schodów, fizyki i raycastu zasłonięcia interakcji.
 - Wysokie DPR i wieloprzebiegowe efekty wymagają dobrego GPU.
 - Adaptacja celuje w 60 FPS, minimum scale .5; nie daje gwarancji FPS.
